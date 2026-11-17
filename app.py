@@ -115,10 +115,3 @@ with col1:
     * 💧 **Konservasi & Hidrologi:** Pemodelan Daerah Aliran Sungai (DAS), Konservasi Tanah dan Air (KTA), serta mitigasi lingkungan.
     """)
 
-with col2:
-    if FOTO_PATH.exists():
-        try:
-            img = Image.open(FOTO_PATH)
-            st.image(img, use_container_width=True)
-        except UnidentifiedImageError:
-            st.warning("⚠️ File `assets/foto_profil.jpg` rusak atau bukan format JPG/
