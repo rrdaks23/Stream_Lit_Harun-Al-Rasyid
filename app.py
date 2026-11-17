@@ -1,26 +1,84 @@
 import streamlit as st
 from pathlib import Path
-import folium
-from streamlit_folium import st_folium
+from PIL import Image, UnidentifiedImageError
+import streamlit.components.v1 as components
 
-st.subheader("🛰️ Lokasi & Basis Spasial — Kota Payakumbuh")
-
-m = folium.Map(
-    location=[-0.2202, 100.6308],
-    zoom_start=13,
-    tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    attr="Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community"
+st.set_page_config(
+    page_title="Portofolio Project & Coding",
+    page_icon="🌿",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-folium.Marker(
-    location=[-0.2202, 100.6308],
-    popup="Kota Payakumbuh, Sumatera Barat",
-    tooltip="Kota Payakumbuh",
-    icon=folium.Icon(color="green", icon="leaf")
-).add_to(m)
+# 1. Render peta Esri World Imagery (Leaflet) di dalam iframe tersembunyi (height=0)
+esri_bg_html = """
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    html, body, #map { margin: 0; padding: 0; width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    var map = L.map('map', {
+      center: [-0.2202, 100.6308], // Koordinat Kota Payakumbuh
+      zoom: 13,
+      zoomControl: false,
+      attributionControl: false
+    });
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19
+    }).addTo(map);
 
-# returned_objects=[] mencegah halaman reload ulang saat peta digeser/di-zoom
-st_folium(m, use_container_width=True, height=320, returned_objects=[])
+    // Memastikan seluruh tile citra satelit dimuat penuh setelah iframe melebar ke 100vh
+    setTimeout(function() {
+      map.invalidateSize();
+    }, 500);
+    window.addEventListener('resize', function() {
+      map.invalidateSize();
+    });
+  </script>
+</body>
+</html>
+"""
+components.html(esri_bg_html, height=0)
+
+# 2. CSS untuk memperluas iframe peta ke seluruh layar & membuat kontainer teks semi-transparan
+st.markdown("""
+<style>
+    iframe[height="0"] {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 0;
+        border: none;
+        pointer-events: none;
+    }
+    [data-testid="stApp"], [data-testid="stAppViewContainer"] {
+        background: transparent !important;
+    }
+    [data-testid="stHeader"] {
+        background: rgba(255, 255, 255, 0.6);
+    }
+    [data-testid="stMainBlockContainer"], .block-container {
+        position: relative;
+        z-index: 1;
+        background-color: rgba(255, 255, 255, 0.88);
+        border-radius: 16px;
+        padding: 2rem 2.5rem;
+        margin-top: 1.5rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(4px);
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # Path dinamis agar aman saat deploy di Windows maupun Linux (Streamlit Cloud)
 BASE_DIR = Path(__file__).parent
@@ -59,17 +117,8 @@ with col1:
 
 with col2:
     if FOTO_PATH.exists():
-        st.image(str(FOTO_PATH), use_container_width=True)
-    else:
-        st.info("📌 Letakkan foto profil Anda di `assets/foto_profil.jpg` agar tampil di sini.")
-    
-    st.success("Gunakan menu **Galeri Proyek** di sidebar kiri untuk melihat studi kasus coding, machine learning, dan pemetaan spasial.")
-
-st.divider()
-
-# --- QUICK STATS ---
-st.subheader("🚀 Quick Stats")
-m1, m2, m3 = st.columns(3)
-m1.metric(label="Project Selesai", value="10+")
-m2.metric(label="Tools & Stack", value="Python, GEE, GIS")
-m3.metric(label="Status", value="Aktif & Terbuka Kolaborasi")
+        try:
+            img = Image.open(FOTO_PATH)
+            st.image(img, use_container_width=True)
+        except UnidentifiedImageError:
+            st.warning("⚠️ File `assets/foto_profil.jpg` rusak atau bukan format JPG/
