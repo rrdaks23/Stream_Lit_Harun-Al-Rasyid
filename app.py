@@ -10,8 +10,8 @@ st.set_page_config(
 
 # Path dinamis agar aman saat deploy di Windows maupun Linux (Streamlit Cloud)
 BASE_DIR = Path(__file__).parent
-FOTO_PATH = BASE_DIR / "assets" / "foto_profil.jpg"
-CV_PATH = BASE_DIR / "assets" / "cv.pdf"
+FOTO_PATH = BASE_DIR / "assets" / "foto_profil.jpeg"
+CV_PATH = BASE_DIR / "assets" / "Harun_CV.pdf"
 
 st.sidebar.info("💡 **Tips:** Pilih halaman di atas untuk menjelajahi galeri project analisis, riset lapangan, dan kontak.")
 
