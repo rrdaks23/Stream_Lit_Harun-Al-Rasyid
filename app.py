@@ -10,8 +10,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 1. Render peta Esri World Imagery (Leaflet)
-esri_bg_html = """
+# 1. Render peta OpenStreetMap (OSM) dengan pusat di Kota Payakumbuh
+osm_bg_html = """
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,16 +33,16 @@ esri_bg_html = """
   <script>
     var map = L.map('map', {
       center: [-0.2202, 100.6308], // Koordinat Kota Payakumbuh
-      zoom: 13,
+      zoom: 14,
       zoomControl: false,
       attributionControl: false
     });
 
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19
     }).addTo(map);
 
-    // Otomatis muat ulang seluruh tile satelit begitu ukuran iframe melebar ke layar penuh
+    // Otomatis muat ulang seluruh tile OSM begitu ukuran iframe melebar ke layar penuh
     const resizeObserver = new ResizeObserver(() => {
       map.invalidateSize();
     });
@@ -51,9 +51,9 @@ esri_bg_html = """
 </body>
 </html>
 """
-components.html(esri_bg_html, height=0)
+components.html(osm_bg_html, height=0)
 
-# 2. CSS untuk basemap background, font Times New Roman warna hitam, dan background Quick Stats
+# 2. CSS untuk basemap background, font Times New Roman warna hitam, dan background kartu/stats
 st.markdown("""
 <style>
     /* Paksa semua variasi selektor iframe Streamlit menjadi latar belakang layar penuh */
@@ -78,7 +78,7 @@ st.markdown("""
         padding: 0 !important;
     }
 
-    /* Buat seluruh lapisan dasar Streamlit transparan agar peta di z-index: -1 terlihat */
+    /* Buat seluruh lapisan dasar Streamlit transparan agar peta OSM di z-index: -1 terlihat */
     .stApp,
     [data-testid="stApp"],
     [data-testid="stAppViewContainer"],
@@ -108,6 +108,8 @@ st.markdown("""
     [data-testid="stMarkdownContainer"] p,
     [data-testid="stMarkdownContainer"] li,
     [data-testid="stMarkdownContainer"] span,
+    [data-testid="stMarkdownContainer"] em,
+    [data-testid="stMarkdownContainer"] strong,
     h1, h2, h3, h4, h5, h6,
     [data-testid="stMetricLabel"],
     [data-testid="stMetricLabel"] p,
@@ -117,6 +119,13 @@ st.markdown("""
     [data-testid="stDownloadButton"] p {
         font-family: "Times New Roman", Times, serif !important;
         color: #000000 !important;
+    }
+
+    /* Latar belakang kartu pada kolom Pendidikan & Kepeminatan */
+    [data-testid="stVerticalBlockBorderWrapper"] {
+        background-color: rgba(255, 255, 255, 0.82) !important;
+        border: 1px solid rgba(0, 0, 0, 0.25) !important;
+        border-radius: 12px !important;
     }
 
     /* Berikan background kartu pada setiap kotak Quick Stats */
@@ -182,6 +191,35 @@ with col2:
         st.info("📌 Letakkan foto profil Anda di `assets/foto_profil.jpg` agar tampil di sini.")
     
     st.success("Gunakan menu **Galeri Proyek** di sidebar kiri untuk melihat studi kasus coding, machine learning, dan pemetaan spasial.")
+
+st.divider()
+
+# --- KOLOM SEJARAH PENDIDIKAN & KEPEMINATAN ---
+st.subheader("🎓 Riwayat Pendidikan & Sejarah Kepeminatan")
+col_edu, col_int = st.columns(2, gap="large")
+
+with col_edu:
+    with st.container(border=True):
+        st.markdown("### 🏛️ Pendidikan")
+        st.markdown("""
+        **IPB University (Institut Pertanian Bogor)**  
+        *S1 Manajemen Hutan — Fakultas Kehutanan dan Lingkungan*  
+        * Memfokuskan studi pada hidrologi hutan, pengelolaan daerah aliran sungai (DAS), dan perencanaan sumber daya hutan.
+        * Aktif dalam Kelompok Studi Hidrologi Hutan serta berbagai kegiatan riset lapangan dan pengabdian masyarakat.
+
+        **Pendidikan Menengah — Kota Payakumbuh, Sumatera Barat**  
+        * *(Sesuaikan nama sekolah dan tahun pendidikan Anda pada baris ini)*
+        """)
+
+with col_int:
+    with st.container(border=True):
+        st.markdown("### 🌱 Perjalanan & Fokus Kepeminatan")
+        st.markdown("""
+        * **Hidrologi Hutan & Pengelolaan DAS:** Mendalami dinamika tata air, perhitungan limpasan permukaan (SCS-CN), dan pemodelan hidrologi berbasis spasial.
+        * **Konservasi Tanah dan Air (KTA):** Evaluasi tingkat bahaya erosi (USLE) serta perancangan teknik konservasi vegetatif dan sipil teknis.
+        * **Penginderaan Jauh & WebGIS:** Pemrosesan citra satelit multitemporal (Sentinel & Landsat) via Google Earth Engine untuk estimasi stok karbon, NDVI, dan suhu permukaan (LST/UHI).
+        * **Pemrograman & Machine Learning:** Otomatisasi pengolahan data geospasial menggunakan Python, Google Colab, dan algoritma prediktif seperti Random Forest.
+        """)
 
 st.divider()
 
