@@ -1,5 +1,76 @@
 import streamlit as st
 from pathlib import Path
+import streamlit as st
+import streamlit.components.v1 as components
+
+st.set_page_config(
+    page_title="Portofolio Project & Coding",
+    page_icon="🌿",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# 1. Render peta Esri World Imagery (Leaflet) di dalam iframe tersembunyi (height=0)
+esri_bg_html = """
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    html, body, #map { margin: 0; padding: 0; width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    var map = L.map('map', {
+      center: [-0.2202, 100.6308], // Koordinat Kota Payakumbuh
+      zoom: 13,
+      zoomControl: false,
+      attributionControl: false
+    });
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19
+    }).addTo(map);
+  </script>
+</body>
+</html>
+"""
+components.html(esri_bg_html, height=0)
+
+# 2. CSS untuk memperluas iframe peta ke seluruh layar & membuat kontainer teks semi-transparan
+st.markdown("""
+<style>
+    iframe[height="0"] {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 0;
+        border: none;
+        pointer-events: none;
+    }
+    [data-testid="stAppViewContainer"] {
+        background: transparent;
+    }
+    [data-testid="stHeader"] {
+        background: rgba(255, 255, 255, 0.6);
+    }
+    [data-testid="stMainBlockContainer"], .block-container {
+        position: relative;
+        z-index: 1;
+        background-color: rgba(255, 255, 255, 0.88);
+        border-radius: 16px;
+        padding: 2rem 2.5rem;
+        margin-top: 1.5rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(4px);
+    }
+</style>
+""", unsafe_allow_html=True)
 
 st.set_page_config(
     page_title="Portofolio Harun Al Rasyid" \
