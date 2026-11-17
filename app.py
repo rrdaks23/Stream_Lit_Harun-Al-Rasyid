@@ -53,7 +53,7 @@ esri_bg_html = """
 """
 components.html(esri_bg_html, height=0)
 
-# 2. CSS untuk menempatkan iframe peta di lapisan paling belakang & membuat latar belakang Streamlit transparan
+# 2. CSS untuk basemap background, font Times New Roman warna hitam, dan background Quick Stats
 st.markdown("""
 <style>
     /* Paksa semua variasi selektor iframe Streamlit menjadi latar belakang layar penuh */
@@ -91,15 +91,47 @@ st.markdown("""
         background: rgba(255, 255, 255, 0.5) !important;
     }
 
-    /* Kontainer konten utama semi-transparan di atas peta (tanpa z-index agar tidak mengunci iframe) */
+    /* Kontainer konten utama semi-transparan di atas peta */
     [data-testid="stMainBlockContainer"],
     .block-container {
-        background-color: rgba(255, 255, 255, 0.85) !important;
+        background-color: rgba(255, 255, 255, 0.88) !important;
         border-radius: 16px;
         padding: 2rem 2.5rem;
         margin-top: 1.5rem;
         margin-bottom: 2rem;
         backdrop-filter: blur(4px);
+    }
+
+    /* Ubah seluruh teks menjadi Times New Roman & warna hitam (kecuali ikon sistem Streamlit) */
+    .stApp,
+    [data-testid="stMarkdownContainer"],
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stMarkdownContainer"] li,
+    [data-testid="stMarkdownContainer"] span,
+    h1, h2, h3, h4, h5, h6,
+    [data-testid="stMetricLabel"],
+    [data-testid="stMetricLabel"] p,
+    [data-testid="stMetricValue"],
+    [data-testid="stMetricValue"] div,
+    [data-testid="stAlert"] p,
+    [data-testid="stDownloadButton"] p {
+        font-family: "Times New Roman", Times, serif !important;
+        color: #000000 !important;
+    }
+
+    /* Berikan background kartu pada setiap kotak Quick Stats */
+    [data-testid="stMetric"] {
+        background-color: rgba(232, 245, 233, 0.92) !important;
+        border: 1px solid rgba(46, 125, 50, 0.35) !important;
+        border-radius: 12px !important;
+        padding: 1rem 1.25rem !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    /* Sesuaikan ukuran angka/teks value di Quick Stats agar tidak terpotong */
+    [data-testid="stMetricValue"] {
+        font-size: 1.65rem !important;
+        font-weight: bold !important;
     }
 </style>
 """, unsafe_allow_html=True)
