@@ -72,14 +72,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.set_page_config(
-    page_title="Portofolio Harun Al Rasyid" \
-    "- Data Science, Geospasial, & Konservasi",
-    page_icon="🌿",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
 # Path dinamis agar aman saat deploy di Windows maupun Linux (Streamlit Cloud)
 BASE_DIR = Path(__file__).parent
 FOTO_PATH = BASE_DIR / "assets" / "foto_profil.jpg"
