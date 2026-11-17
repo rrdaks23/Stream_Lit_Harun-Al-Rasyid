@@ -1,75 +1,26 @@
 import streamlit as st
 from pathlib import Path
-import streamlit.components.v1 as components
+import folium
+from streamlit_folium import st_folium
 
-st.set_page_config(
-    page_title="Portofolio Project & Coding",
-    page_icon="🌿",
-    layout="wide",
-    initial_sidebar_state="expanded"
+st.subheader("🛰️ Lokasi & Basis Spasial — Kota Payakumbuh")
+
+m = folium.Map(
+    location=[-0.2202, 100.6308],
+    zoom_start=13,
+    tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    attr="Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community"
 )
 
-# 1. Render peta Esri World Imagery (Leaflet) di dalam iframe tersembunyi (height=0)
-esri_bg_html = """
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <style>
-    html, body, #map { margin: 0; padding: 0; width: 100%; height: 100%; }
-  </style>
-</head>
-<body>
-  <div id="map"></div>
-  <script>
-    var map = L.map('map', {
-      center: [-0.2202, 100.6308], // Koordinat Kota Payakumbuh
-      zoom: 13,
-      zoomControl: false,
-      attributionControl: false
-    });
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 19
-    }).addTo(map);
-  </script>
-</body>
-</html>
-"""
-components.html(esri_bg_html, height=0)
+folium.Marker(
+    location=[-0.2202, 100.6308],
+    popup="Kota Payakumbuh, Sumatera Barat",
+    tooltip="Kota Payakumbuh",
+    icon=folium.Icon(color="green", icon="leaf")
+).add_to(m)
 
-# 2. CSS untuk memperluas iframe peta ke seluruh layar & membuat kontainer teks semi-transparan
-st.markdown("""
-<style>
-    iframe[height="0"] {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw !important;
-        height: 100vh !important;
-        z-index: 0;
-        border: none;
-        pointer-events: none;
-    }
-    [data-testid="stAppViewContainer"] {
-        background: transparent;
-    }
-    [data-testid="stHeader"] {
-        background: rgba(255, 255, 255, 0.6);
-    }
-    [data-testid="stMainBlockContainer"], .block-container {
-        position: relative;
-        z-index: 1;
-        background-color: rgba(255, 255, 255, 0.88);
-        border-radius: 16px;
-        padding: 2rem 2.5rem;
-        margin-top: 1.5rem;
-        margin-bottom: 2rem;
-        backdrop-filter: blur(4px);
-    }
-</style>
-""", unsafe_allow_html=True)
+# returned_objects=[] mencegah halaman reload ulang saat peta digeser/di-zoom
+st_folium(m, use_container_width=True, height=320, returned_objects=[])
 
 # Path dinamis agar aman saat deploy di Windows maupun Linux (Streamlit Cloud)
 BASE_DIR = Path(__file__).parent

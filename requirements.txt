@@ -1,6 +1,5 @@
 streamlit
 pandas
 plotly
-geopandas
-rasterio
+folium
 streamlit-folium
