@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 1. Render peta Esri World Imagery (Leaflet) di dalam iframe tersembunyi (height=0)
+# 1. Render peta Esri World Imagery (Leaflet)
 esri_bg_html = """
 <!DOCTYPE html>
 <html>
@@ -19,7 +19,13 @@ esri_bg_html = """
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    html, body, #map { margin: 0; padding: 0; width: 100%; height: 100%; }
+    html, body, #map {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
   </style>
 </head>
 <body>
@@ -31,46 +37,64 @@ esri_bg_html = """
       zoomControl: false,
       attributionControl: false
     });
+
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 19
     }).addTo(map);
 
-    // Memastikan seluruh tile citra satelit dimuat penuh setelah iframe melebar ke 100vh
-    setTimeout(function() {
-      map.invalidateSize();
-    }, 500);
-    window.addEventListener('resize', function() {
+    // Otomatis muat ulang seluruh tile satelit begitu ukuran iframe melebar ke layar penuh
+    const resizeObserver = new ResizeObserver(() => {
       map.invalidateSize();
     });
+    resizeObserver.observe(document.getElementById('map'));
   </script>
 </body>
 </html>
 """
 components.html(esri_bg_html, height=0)
 
-# 2. CSS untuk memperluas iframe peta ke seluruh layar & membuat kontainer teks semi-transparan
+# 2. CSS untuk menempatkan iframe peta di lapisan paling belakang & membuat latar belakang Streamlit transparan
 st.markdown("""
 <style>
+    /* Paksa semua variasi selektor iframe Streamlit menjadi latar belakang layar penuh */
+    iframe[title="st.iframe"],
+    [data-testid="stIFrame"],
+    .stHtml iframe,
     iframe[height="0"] {
-        position: fixed;
-        top: 0;
-        left: 0;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
         width: 100vw !important;
         height: 100vh !important;
-        z-index: 0;
-        border: none;
-        pointer-events: none;
+        z-index: -1 !important;
+        border: none !important;
+        pointer-events: none !important;
     }
-    [data-testid="stApp"], [data-testid="stAppViewContainer"] {
+
+    /* Hilangkan ruang kosong sisa komponen HTML di atas judul */
+    [data-testid="stElementContainer"]:has(iframe) {
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Buat seluruh lapisan dasar Streamlit transparan agar peta di z-index: -1 terlihat */
+    .stApp,
+    [data-testid="stApp"],
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"] {
         background: transparent !important;
+        background-color: transparent !important;
     }
+
     [data-testid="stHeader"] {
-        background: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.5) !important;
     }
-    [data-testid="stMainBlockContainer"], .block-container {
-        position: relative;
-        z-index: 1;
-        background-color: rgba(255, 255, 255, 0.88);
+
+    /* Kontainer konten utama semi-transparan di atas peta (tanpa z-index agar tidak mengunci iframe) */
+    [data-testid="stMainBlockContainer"],
+    .block-container {
+        background-color: rgba(255, 255, 255, 0.85) !important;
         border-radius: 16px;
         padding: 2rem 2.5rem;
         margin-top: 1.5rem;
