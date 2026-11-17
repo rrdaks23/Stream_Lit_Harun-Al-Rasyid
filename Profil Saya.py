@@ -2,7 +2,8 @@ import streamlit as st
 from pathlib import Path
 
 st.set_page_config(
-    page_title="Portofolio Project & Coding",
+    page_title="Portofolio Harun Al Rasyid" \
+    "- Data Science, Geospasial, & Konservasi",
     page_icon="🌿",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -10,7 +11,7 @@ st.set_page_config(
 
 # Path dinamis agar aman saat deploy di Windows maupun Linux (Streamlit Cloud)
 BASE_DIR = Path(__file__).parent
-FOTO_PATH = BASE_DIR / "assets" / "foto_profil.jpeg"
+FOTO_PATH = BASE_DIR / "assets" / "foto_profil.jpg"
 CV_PATH = BASE_DIR / "assets" / "Harun_CV.pdf"
 
 st.sidebar.info("💡 **Tips:** Pilih halaman di atas untuk menjelajahi galeri project analisis, riset lapangan, dan kontak.")
