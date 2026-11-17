@@ -115,3 +115,23 @@ with col1:
     * 💧 **Konservasi & Hidrologi:** Pemodelan Daerah Aliran Sungai (DAS), Konservasi Tanah dan Air (KTA), serta mitigasi lingkungan.
     """)
 
+with col2:
+    if FOTO_PATH.exists():
+        try:
+            img = Image.open(FOTO_PATH)
+            st.image(img, use_container_width=True)
+        except UnidentifiedImageError:
+            st.warning("⚠️ File `assets/foto_profil.jpg` rusak atau bukan format JPG/PNG yang valid.")
+    else:
+        st.info("📌 Letakkan foto profil Anda di `assets/foto_profil.jpg` agar tampil di sini.")
+    
+    st.success("Gunakan menu **Galeri Proyek** di sidebar kiri untuk melihat studi kasus coding, machine learning, dan pemetaan spasial.")
+
+st.divider()
+
+# --- QUICK STATS ---
+st.subheader("🚀 Quick Stats")
+m1, m2, m3 = st.columns(3)
+m1.metric(label="Project Selesai", value="10+")
+m2.metric(label="Tools & Stack", value="Python, GEE, GIS")
+m3.metric(label="Status", value="Aktif & Terbuka Kolaborasi")
